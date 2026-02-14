@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Why Face ID fails with glasses and how Apple fixed it - Insights from facial recognition AI">
+    <title>Why Face ID Fails When You Wear Glasses | Shailly Bhati</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/blog.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">Shailly Bhati</div>
+            <ul class="nav-menu">
+                <li><a href="index.html#home" class="nav-link">Home</a></li>
+                <li><a href="index.html#about" class="nav-link">About</a></li>
+                <li><a href="index.html#experience" class="nav-link">Experience</a></li>
+                <li><a href="index.html#projects" class="nav-link">Projects</a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
+                <li><a href="index.html#contact" class="nav-link">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Blog Post -->
+    <article class="blog-post-page">
+        <div class="container">
+            <div class="post-header">
+                <div class="post-meta">
+                    <span class="post-category">AI/ML</span>
+                    <span class="post-date"><i class="far fa-calendar"></i> February 13, 2024</span>
+                    <span class="post-read-time"><i class="far fa-clock"></i> 4 min read</span>
+                </div>
+                <h1>Why Face ID Fails When You Wear Glasses (And How Apple Fixed It)</h1>
+                <p class="post-subtitle">
+                    A simple AI problem that affects millions of iPhone users daily
+                </p>
+                <div class="author-info">
+                    <div class="author-details">
+                        <strong>Shailly Bhati</strong>
+                        <span>Software Engineer | AI/ML Enthusiast</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-content">
+
+                <h2>The Problem Everyone Faces</h2>
+
+                <p>
+                    You wake up, put on your glasses, and try to unlock your iPhone. Face ID fails. You take off your
+                    glasses, try again—it works. Put glasses back on? Fails again.
+                </p>
+
+                <p>
+                    This happens to millions of people every day. It's frustrating, especially when you're just trying
+                    to check your phone quickly.
+                </p>
+
+                <h2>Why Does This Happen?</h2>
+
+                <p>
+                    Face ID uses facial recognition AI to identify you. It scans your face and creates a mathematical
+                    map of your features—eyes, nose, mouth, face shape.
+                </p>
+
+                <p><strong>The issue:</strong> Glasses change how your face looks to the camera.</p>
+
+                <p>When you set up Face ID without glasses, the AI learns your face without them. Later, when you wear glasses:</p>
+                <ul>
+                    <li>Your eyes look different (magnified or reduced)</li>
+                    <li>Reflections on lenses confuse the camera</li>
+                    <li>Frames cover parts of your face</li>
+                </ul>
+
+                <p>
+                    The AI thinks "This doesn't match the face I learned" and blocks you out.
+                </p>
+
+                <h2>The Same Problem with Masks</h2>
+
+                <p>
+                    During COVID-19, this became a huge issue with face masks. People couldn't unlock their phones while
+                    wearing masks because Face ID couldn't see enough of their face.
+                </p>
+
+                <p>
+                    Apple's solution? They added "Face ID with a Mask" in iOS 15.4. The AI learned to recognize you
+                    using just your eyes and surrounding features.
+                </p>
+
+                <h2>How to Fix the Glasses Problem</h2>
+
+                <h3>Solution 1: Set Up an Alternate Appearance</h3>
+                <ol>
+                    <li>Go to Settings → Face ID & Passcode</li>
+                    <li>Tap "Set Up an Alternate Appearance"</li>
+                    <li>Scan your face while wearing your glasses</li>
+                </ol>
+
+                <p>Now Face ID knows you with AND without glasses.</p>
+
+                <h3>Solution 2: Let Face ID Learn Over Time</h3>
+                <p>
+                    Face ID actually learns as you use it. When it fails but you enter your passcode, it thinks
+                    "Oh, that WAS the right person" and updates its model.
+                </p>
+
+                <p>
+                    Over time, it learns to recognize you with glasses, hats, different hairstyles, etc.
+                </p>
+
+                <h2>The Hidden Security Challenge: Spoofing</h2>
+
+                <p>
+                    Here's where facial recognition gets really interesting: Face ID doesn't just need to recognize you—it
+                    needs to make sure you're actually YOU and not a photo, video, or 3D mask of you.
+                </p>
+
+                <p>
+                    This is called <strong>anti-spoofing</strong> or <strong>liveness detection</strong>. Face ID uses depth
+                    sensing (infrared camera + dot projector) to create a 3D map of your face. This prevents someone from
+                    unlocking your phone with:
+                </p>
+                <ul>
+                    <li>A printed photo of your face</li>
+                    <li>A video playing on another phone</li>
+                    <li>A basic 3D mask</li>
+                </ul>
+
+                <div class="callout callout-info">
+                    <strong>My Experience with Image Spoof Detection:</strong> During my master's at Northeastern University,
+                    I worked on an Image Spoof Detection project that tackled exactly this problem—distinguishing real faces
+                    from fake presentations (photos, videos, masks). Using computer vision and deep learning, we built models
+                    to detect subtle differences in texture, depth, and lighting that human eyes miss but AI can catch.
+                </div>
+
+                <h2>Why This Matters for AI</h2>
+
+                <p>
+                    This simple problem shows two big challenges in AI:
+                </p>
+
+                <h3>1. Handling Variation</h3>
+                <p>
+                    Humans instantly recognize someone with or without glasses. AI struggles because it's looking for patterns,
+                    not understanding that glasses are just an accessory.
+                </p>
+
+                <h3>2. Balancing Security and Usability</h3>
+                <p>
+                    Make Face ID too strict → It rejects real users wearing glasses (bad user experience)<br>
+                    Make it too lenient → It accepts fake faces or photos (security risk)
+                </p>
+
+                <p>Modern AI (like Apple's newer Face ID models) is getting better by:</p>
+                <ul>
+                    <li>Learning from your daily use (adaptive recognition)</li>
+                    <li>Focusing on features that don't change (bone structure, eye spacing)</li>
+                    <li>Ignoring accessories like glasses, hats, and makeup</li>
+                    <li>Using multiple sensors (RGB camera + infrared + depth) to prevent spoofing</li>
+                </ul>
+
+                <h2>What I Learned Building Spoof Detection Systems</h2>
+
+                <p>
+                    Working on image spoof detection taught me that facial recognition isn't just about matching faces—it's
+                    about understanding context:
+                </p>
+
+                <ul>
+                    <li><strong>Texture analysis:</strong> Real skin has pores and imperfections; printed photos don't</li>
+                    <li><strong>Motion patterns:</strong> Real faces have micro-movements (blinking, subtle head motion); videos loop unnaturally</li>
+                    <li><strong>Depth information:</strong> 3D depth sensors (like Face ID's) can't be fooled by 2D images</li>
+                    <li><strong>Lighting consistency:</strong> Real faces reflect light naturally; masks and photos have artifacts</li>
+                </ul>
+
+                <p>
+                    These techniques are why Face ID is so secure—it's not just looking at your face, it's analyzing
+                    depth, texture, and liveness simultaneously.
+                </p>
+
+                <h2>The Bottom Line</h2>
+
+                <p>
+                    Face ID failing with glasses isn't a bug—it's a limitation of how facial recognition AI works.
+                    The good news? Apple improved it over time by:
+                </p>
+                <ul>
+                    <li>Letting the AI learn multiple versions of your face</li>
+                    <li>Adding alternate appearance support</li>
+                    <li>Continuous learning from your passcode corrections</li>
+                </ul>
+
+                <p>
+                    <strong>Quick fix:</strong> Set up an alternate appearance with your glasses on. Problem solved.
+                </p>
+
+                <p>
+                    And remember—while it's frustrating when Face ID rejects you with glasses, that same strict verification
+                    is what keeps your phone secure from spoofing attacks.
+                </p>
+
+                <div class="post-tags">
+                    <h3>Tags:</h3>
+                    <span class="tag">Face ID</span>
+                    <span class="tag">iPhone</span>
+                    <span class="tag">Facial Recognition</span>
+                    <span class="tag">AI Limitations</span>
+                    <span class="tag">Spoof Detection</span>
+                    <span class="tag">Computer Vision</span>
+                </div>
+
+                <div class="post-share">
+                    <h3>Share this article:</h3>
+                    <div class="share-buttons">
+                        <a href="https://twitter.com/intent/tweet?text=Why Face ID Fails When You Wear Glasses&url=https://shellsss29.github.io/blog-post-1.html" target="_blank" class="share-btn">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://shellsss29.github.io/blog-post-1.html" target="_blank" class="share-btn">
+                            <i class="fab fa-linkedin"></i> LinkedIn
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="post-navigation">
+                <a href="blog.html" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Blog
+                </a>
+            </div>
+
+        </div>
+    </article>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Shailly Bhati. Built with passion and code.</p>
+            <div class="footer-links">
+                <a href="https://www.linkedin.com/in/shailly-bhati" target="_blank">LinkedIn</a>
+                <a href="https://github.com/Shellsss29" target="_blank">GitHub</a>
+                <a href="mailto:shaillybhati72@gmail.com">Email</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
