@@ -615,6 +615,97 @@ section {
     }
 }
 
+/* ===== BLOG SECTION ===== */
+.blog-section {
+    background: var(--dark-bg);
+}
+
+.blog-preview {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.blog-section .blog-card {
+    background: var(--dark-card);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+    border: 1px solid transparent;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 0;
+}
+
+.blog-section .blog-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+}
+
+.blog-section .blog-image {
+    position: relative;
+    height: 100%;
+    min-height: 250px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.blog-section .blog-placeholder {
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.blog-section .blog-category {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+}
+
+.blog-section .blog-content {
+    padding: 30px;
+}
+
+.blog-section .blog-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.blog-section .blog-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.blog-section .blog-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.blog-section .blog-content p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.blog-section .blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
 /* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 768px) {
     .hamburger {
@@ -668,6 +759,14 @@ section {
 
     .timeline-dot {
         left: 1px;
+    }
+
+    .blog-section .blog-card {
+        grid-template-columns: 1fr;
+    }
+
+    .blog-section .blog-image {
+        min-height: 200px;
     }
 }
 
