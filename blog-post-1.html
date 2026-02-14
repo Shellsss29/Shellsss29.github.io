@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Why Face ID fails with glasses and how Apple fixed it - Insights from facial recognition AI">
-    <title>Why Face ID Fails When You Wear Glasses | Shailly Bhati</title>
+    <meta name="description" content="Why Apple Photos splits the same person into multiple clusters and how to fix it with context-aware facial recognition">
+    <title>Why Apple Photos Thinks You're 5 Different People | Shailly Bhati</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/blog.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,11 +32,11 @@
                 <div class="post-meta">
                     <span class="post-category">AI/ML</span>
                     <span class="post-date"><i class="far fa-calendar"></i> February 13, 2024</span>
-                    <span class="post-read-time"><i class="far fa-clock"></i> 4 min read</span>
+                    <span class="post-read-time"><i class="far fa-clock"></i> 5 min read</span>
                 </div>
-                <h1>Why Face ID Fails When You Wear Glasses (And How Apple Fixed It)</h1>
+                <h1>Why Apple Photos Thinks You're 5 Different People (And How to Fix It)</h1>
                 <p class="post-subtitle">
-                    A simple AI problem that affects millions of iPhone users daily
+                    A simple AI problem Apple still hasn't solved—and a potential solution from facial recognition research
                 </p>
                 <div class="author-info">
                     <div class="author-details">
@@ -48,176 +48,189 @@
 
             <div class="post-content">
 
-                <h2>The Problem Everyone Faces</h2>
+                <h2>The Problem</h2>
 
                 <p>
-                    You wake up, put on your glasses, and try to unlock your iPhone. Face ID fails. You take off your
-                    glasses, try again—it works. Put glasses back on? Fails again.
+                    You open Apple Photos, go to the "People" album, and see yourself split into 5 different people.
+                    Same face, different clusters. You manually merge them, but next week? Split again.
                 </p>
 
                 <p>
-                    This happens to millions of people every day. It's frustrating, especially when you're just trying
-                    to check your phone quickly.
+                    This happens to millions of iPhone users. Apple's facial recognition creates duplicate "people"
+                    for the same person, and it's frustrating.
                 </p>
 
                 <h2>Why Does This Happen?</h2>
 
                 <p>
-                    Face ID uses facial recognition AI to identify you. It scans your face and creates a mathematical
-                    map of your features—eyes, nose, mouth, face shape.
+                    Apple Photos uses facial recognition AI to automatically group photos by face. When you take photos, it:
                 </p>
 
-                <p><strong>The issue:</strong> Glasses change how your face looks to the camera.</p>
+                <ol>
+                    <li>Detects faces in each photo</li>
+                    <li>Creates a mathematical "face signature" (embedding vector)</li>
+                    <li>Clusters similar signatures together</li>
+                    <li>Each cluster becomes a "person"</li>
+                </ol>
 
-                <p>When you set up Face ID without glasses, the AI learns your face without them. Later, when you wear glasses:</p>
+                <p><strong>The problem:</strong> The AI creates separate clusters for the same person when:</p>
                 <ul>
-                    <li>Your eyes look different (magnified or reduced)</li>
-                    <li>Reflections on lenses confuse the camera</li>
-                    <li>Frames cover parts of your face</li>
+                    <li>Lighting changes (bright outdoor vs. dim indoor)</li>
+                    <li>Age differences (photos from 5 years ago vs. today)</li>
+                    <li>Angles (front-facing vs. side profile)</li>
+                    <li>Accessories (glasses on/off, hats, makeup)</li>
+                    <li>Photo quality (blurry vs. sharp)</li>
                 </ul>
 
                 <p>
-                    The AI thinks "This doesn't match the face I learned" and blocks you out.
+                    The clustering algorithm thinks "These faces are too different—must be different people."
                 </p>
 
-                <h2>The Same Problem with Masks</h2>
+                <h2>Why Apple Hasn't Solved It</h2>
+
+                <p>Apple faces a tough tradeoff:</p>
 
                 <p>
-                    During COVID-19, this became a huge issue with face masks. People couldn't unlock their phones while
-                    wearing masks because Face ID couldn't see enough of their face.
-                </p>
-
-                <p>
-                    Apple's solution? They added "Face ID with a Mask" in iOS 15.4. The AI learned to recognize you
-                    using just your eyes and surrounding features.
-                </p>
-
-                <h2>How to Fix the Glasses Problem</h2>
-
-                <h3>Solution 1: Set Up an Alternate Appearance</h3>
-                <ol>
-                    <li>Go to Settings → Face ID & Passcode</li>
-                    <li>Tap "Set Up an Alternate Appearance"</li>
-                    <li>Scan your face while wearing your glasses</li>
-                </ol>
-
-                <p>Now Face ID knows you with AND without glasses.</p>
-
-                <h3>Solution 2: Let Face ID Learn Over Time</h3>
-                <p>
-                    Face ID actually learns as you use it. When it fails but you enter your passcode, it thinks
-                    "Oh, that WAS the right person" and updates its model.
+                    <strong>Make clustering too strict</strong> → Same person split into multiple clusters (current problem)<br>
+                    <strong>Make clustering too loose</strong> → Different people get grouped together (worse problem)
                 </p>
 
                 <p>
-                    Over time, it learns to recognize you with glasses, hats, different hairstyles, etc.
+                    Apple chooses the conservative approach: better to split one person than merge two different people.
+                    But it's still annoying.
                 </p>
 
-                <h2>The Hidden Security Challenge: Spoofing</h2>
+                <h2>The Solution: Context-Aware Face Recognition</h2>
 
-                <p>
-                    Here's where facial recognition gets really interesting: Face ID doesn't just need to recognize you—it
-                    needs to make sure you're actually YOU and not a photo, video, or 3D mask of you.
-                </p>
+                <p>Here's how we can solve this using techniques from computer vision research:</p>
 
-                <p>
-                    This is called <strong>anti-spoofing</strong> or <strong>liveness detection</strong>. Face ID uses depth
-                    sensing (infrared camera + dot projector) to create a 3D map of your face. This prevents someone from
-                    unlocking your phone with:
-                </p>
+                <h3>1. Use Multiple Signals Beyond Just the Face</h3>
+
+                <p>Don't rely only on facial features. Consider:</p>
                 <ul>
-                    <li>A printed photo of your face</li>
-                    <li>A video playing on another phone</li>
-                    <li>A basic 3D mask</li>
+                    <li><strong>Clothing patterns:</strong> Same person often wears similar styles/colors</li>
+                    <li><strong>Location metadata:</strong> Photos taken at the same place likely have the same people</li>
+                    <li><strong>Time clustering:</strong> Photos taken together (within hours/days) likely have the same people</li>
+                    <li><strong>Body shape and posture:</strong> Supplement face data with body recognition</li>
+                </ul>
+
+                <h3>2. Hierarchical Clustering Instead of Flat Clustering</h3>
+
+                <p>Instead of creating one big cluster per person, use a two-level approach:</p>
+                <ul>
+                    <li><strong>Level 1:</strong> Create micro-clusters (very similar faces)</li>
+                    <li><strong>Level 2:</strong> Link micro-clusters that likely belong to the same person using context signals</li>
+                </ul>
+
+                <p>
+                    This way, your face with glasses and without glasses are separate micro-clusters but linked as
+                    the same person.
+                </p>
+
+                <h3>3. Adaptive Similarity Thresholds</h3>
+
+                <p>Use different similarity thresholds based on:</p>
+                <ul>
+                    <li>Photo quality (allow more variation for blurry photos)</li>
+                    <li>Time span (allow more variation for photos years apart)</li>
+                    <li>Number of matching context signals (lower threshold if location/clothing match)</li>
+                </ul>
+
+                <h2>My Experience with Facial Recognition</h2>
+
+                <p>
+                    During my master's at Northeastern University, I worked on an <strong>Image Spoof Detection</strong>
+                    project focused on facial recognition challenges. We built systems to:
+                </p>
+
+                <ul>
+                    <li>Detect subtle facial features across different conditions (lighting, angles, quality)</li>
+                    <li>Distinguish real faces from fake presentations using texture and depth analysis</li>
+                    <li>Handle facial variation while maintaining security</li>
                 </ul>
 
                 <div class="callout callout-info">
-                    <strong>My Experience with Image Spoof Detection:</strong> During my master's at Northeastern University,
-                    I worked on an Image Spoof Detection project that tackled exactly this problem—distinguishing real faces
-                    from fake presentations (photos, videos, masks). Using computer vision and deep learning, we built models
-                    to detect subtle differences in texture, depth, and lighting that human eyes miss but AI can catch.
+                    <strong>Key insight:</strong> Facial recognition isn't just about matching faces—it's about
+                    understanding context. The same techniques used to detect spoofing (analyzing texture, depth,
+                    consistency) can improve clustering accuracy.
                 </div>
 
-                <h2>Why This Matters for AI</h2>
-
-                <p>
-                    This simple problem shows two big challenges in AI:
-                </p>
-
-                <h3>1. Handling Variation</h3>
-                <p>
-                    Humans instantly recognize someone with or without glasses. AI struggles because it's looking for patterns,
-                    not understanding that glasses are just an accessory.
-                </p>
-
-                <h3>2. Balancing Security and Usability</h3>
-                <p>
-                    Make Face ID too strict → It rejects real users wearing glasses (bad user experience)<br>
-                    Make it too lenient → It accepts fake faces or photos (security risk)
-                </p>
-
-                <p>Modern AI (like Apple's newer Face ID models) is getting better by:</p>
+                <p>In spoof detection, we learned that:</p>
                 <ul>
-                    <li>Learning from your daily use (adaptive recognition)</li>
-                    <li>Focusing on features that don't change (bone structure, eye spacing)</li>
-                    <li>Ignoring accessories like glasses, hats, and makeup</li>
-                    <li>Using multiple sensors (RGB camera + infrared + depth) to prevent spoofing</li>
+                    <li><strong>Texture analysis</strong> helps differentiate faces under different lighting</li>
+                    <li><strong>Multi-modal signals</strong> (RGB + depth + context) are more reliable than single features</li>
+                    <li><strong>Temporal consistency</strong> (how faces appear over time) catches what single-frame analysis misses</li>
                 </ul>
 
-                <h2>What I Learned Building Spoof Detection Systems</h2>
+                <p>These same principles apply to solving Apple's clustering problem.</p>
 
-                <p>
-                    Working on image spoof detection taught me that facial recognition isn't just about matching faces—it's
-                    about understanding context:
-                </p>
+                <h2>How to Fix It Yourself (For Now)</h2>
 
+                <p>Until Apple improves their algorithm, here's what you can do:</p>
+
+                <h3>Manual Merge:</h3>
+                <ol>
+                    <li>Open Photos app → People album</li>
+                    <li>Tap "Select" in top right</li>
+                    <li>Select all duplicates of the same person</li>
+                    <li>Tap "Merge" at the bottom</li>
+                </ol>
+
+                <h3>Name Them:</h3>
+                <p>Add names to your "people" - this helps the AI learn and reduces re-splitting</p>
+
+                <h3>Keep Original Photos:</h3>
+                <p>Avoid heavy filters/edits that change facial features significantly</p>
+
+                <h2>What Apple Should Do</h2>
+
+                <h3>Short-term fix:</h3>
                 <ul>
-                    <li><strong>Texture analysis:</strong> Real skin has pores and imperfections; printed photos don't</li>
-                    <li><strong>Motion patterns:</strong> Real faces have micro-movements (blinking, subtle head motion); videos loop unnaturally</li>
-                    <li><strong>Depth information:</strong> 3D depth sensors (like Face ID's) can't be fooled by 2D images</li>
-                    <li><strong>Lighting consistency:</strong> Real faces reflect light naturally; masks and photos have artifacts</li>
+                    <li>Add a "confidence score" showing how sure the AI is about each cluster</li>
+                    <li>Let users mark clusters as "same person" and learn from it</li>
                 </ul>
 
-                <p>
-                    These techniques are why Face ID is so secure—it's not just looking at your face, it's analyzing
-                    depth, texture, and liveness simultaneously.
-                </p>
+                <h3>Long-term solution:</h3>
+                <ul>
+                    <li>Implement multi-signal clustering (face + context)</li>
+                    <li>Use on-device learning to adapt to each user's photo library</li>
+                    <li>Leverage depth data from iPhone cameras (already available, not fully used)</li>
+                </ul>
 
                 <h2>The Bottom Line</h2>
 
                 <p>
-                    Face ID failing with glasses isn't a bug—it's a limitation of how facial recognition AI works.
-                    The good news? Apple improved it over time by:
-                </p>
-                <ul>
-                    <li>Letting the AI learn multiple versions of your face</li>
-                    <li>Adding alternate appearance support</li>
-                    <li>Continuous learning from your passcode corrections</li>
-                </ul>
-
-                <p>
-                    <strong>Quick fix:</strong> Set up an alternate appearance with your glasses on. Problem solved.
+                    Apple Photos splitting the same person into multiple clusters is a <strong>clustering algorithm
+                    limitation</strong>, not a fundamental AI failure. The fix exists—it just requires:
                 </p>
 
+                <ol>
+                    <li>Better context awareness beyond facial features</li>
+                    <li>Hierarchical clustering instead of flat clustering</li>
+                    <li>Adaptive thresholds based on photo quality and metadata</li>
+                </ol>
+
                 <p>
-                    And remember—while it's frustrating when Face ID rejects you with glasses, that same strict verification
-                    is what keeps your phone secure from spoofing attacks.
+                    With techniques from facial recognition research (like those used in spoof detection), this
+                    problem is solvable. Apple just needs to implement it.
                 </p>
+
+                <p><strong>Until then, keep manually merging those duplicates.</strong></p>
 
                 <div class="post-tags">
                     <h3>Tags:</h3>
-                    <span class="tag">Face ID</span>
-                    <span class="tag">iPhone</span>
+                    <span class="tag">Apple Photos</span>
                     <span class="tag">Facial Recognition</span>
+                    <span class="tag">Computer Vision</span>
+                    <span class="tag">Clustering</span>
                     <span class="tag">AI Limitations</span>
                     <span class="tag">Spoof Detection</span>
-                    <span class="tag">Computer Vision</span>
                 </div>
 
                 <div class="post-share">
                     <h3>Share this article:</h3>
                     <div class="share-buttons">
-                        <a href="https://twitter.com/intent/tweet?text=Why Face ID Fails When You Wear Glasses&url=https://shellsss29.github.io/blog-post-1.html" target="_blank" class="share-btn">
+                        <a href="https://twitter.com/intent/tweet?text=Why Apple Photos Thinks You're 5 Different People&url=https://shellsss29.github.io/blog-post-1.html" target="_blank" class="share-btn">
                             <i class="fab fa-twitter"></i> Twitter
                         </a>
                         <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://shellsss29.github.io/blog-post-1.html" target="_blank" class="share-btn">
