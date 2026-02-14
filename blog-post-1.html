@@ -36,7 +36,7 @@
                 </div>
                 <h1>Why Apple Photos Thinks You're 5 Different People (And How to Fix It)</h1>
                 <p class="post-subtitle">
-                    A simple AI problem Apple still hasn't solved—and a potential solution from facial recognition research
+                    Apple still can't fix this photo problem. Here's what my facial recognition research taught me about solving it.
                 </p>
                 <div class="author-info">
                     <div class="author-details">
@@ -51,171 +51,189 @@
                 <h2>The Problem</h2>
 
                 <p>
-                    You open Apple Photos, go to the "People" album, and see yourself split into 5 different people.
-                    Same face, different clusters. You manually merge them, but next week? Split again.
+                    I opened Apple Photos last week and found myself listed as 5 different people. Same face, but the app
+                    created separate entries for each one. I merged them manually. Two days later? Split again.
                 </p>
 
                 <p>
-                    This happens to millions of iPhone users. Apple's facial recognition creates duplicate "people"
-                    for the same person, and it's frustrating.
+                    If you use an iPhone, you've probably dealt with this too. The facial recognition just keeps creating
+                    duplicates, and it's been like this for years.
                 </p>
 
                 <h2>Why Does This Happen?</h2>
 
                 <p>
-                    Apple Photos uses facial recognition AI to automatically group photos by face. When you take photos, it:
+                    Apple Photos scans your face in each photo and creates a mathematical signature for it. Think of it
+                    like a fingerprint, but for your face. Then it groups similar signatures together. Each group becomes
+                    a "person" in your People album.
                 </p>
 
-                <ol>
-                    <li>Detects faces in each photo</li>
-                    <li>Creates a mathematical "face signature" (embedding vector)</li>
-                    <li>Clusters similar signatures together</li>
-                    <li>Each cluster becomes a "person"</li>
-                </ol>
-
-                <p><strong>The problem:</strong> The AI creates separate clusters for the same person when:</p>
+                <p>The problem is that your face signature changes based on:</p>
                 <ul>
-                    <li>Lighting changes (bright outdoor vs. dim indoor)</li>
-                    <li>Age differences (photos from 5 years ago vs. today)</li>
-                    <li>Angles (front-facing vs. side profile)</li>
-                    <li>Accessories (glasses on/off, hats, makeup)</li>
-                    <li>Photo quality (blurry vs. sharp)</li>
+                    <li>Lighting (outdoor photos vs. indoor photos look completely different)</li>
+                    <li>Time (you from 5 years ago vs. you today)</li>
+                    <li>Angle (front-facing selfie vs. side profile at a party)</li>
+                    <li>What you're wearing (glasses, hats, makeup)</li>
+                    <li>Photo quality (crisp iPhone 15 photo vs. grainy old picture)</li>
                 </ul>
 
                 <p>
-                    The clustering algorithm thinks "These faces are too different—must be different people."
+                    So the system looks at two photos of you and thinks, "These signatures are too different. Must be
+                    two different people." And boom, you get duplicates.
                 </p>
 
                 <h2>Why Apple Hasn't Solved It</h2>
 
-                <p>Apple faces a tough tradeoff:</p>
-
                 <p>
-                    <strong>Make clustering too strict</strong> → Same person split into multiple clusters (current problem)<br>
-                    <strong>Make clustering too loose</strong> → Different people get grouped together (worse problem)
+                    Here's the thing: Apple is stuck between two bad options. If they make the grouping too strict, you
+                    get what we have now (one person split into 5). But if they make it too loose, your photos of your
+                    friend Mike might get mixed with photos of some random guy at a concert.
                 </p>
 
                 <p>
-                    Apple chooses the conservative approach: better to split one person than merge two different people.
-                    But it's still annoying.
+                    Apple picked the "safe" choice. They'd rather annoy you with duplicates than accidentally mix up
+                    different people's faces. I get it, but it's still frustrating when you have to manually merge
+                    the same person every week.
                 </p>
 
-                <h2>The Solution: Context-Aware Face Recognition</h2>
-
-                <p>Here's how we can solve this using techniques from computer vision research:</p>
-
-                <h3>1. Use Multiple Signals Beyond Just the Face</h3>
-
-                <p>Don't rely only on facial features. Consider:</p>
-                <ul>
-                    <li><strong>Clothing patterns:</strong> Same person often wears similar styles/colors</li>
-                    <li><strong>Location metadata:</strong> Photos taken at the same place likely have the same people</li>
-                    <li><strong>Time clustering:</strong> Photos taken together (within hours/days) likely have the same people</li>
-                    <li><strong>Body shape and posture:</strong> Supplement face data with body recognition</li>
-                </ul>
-
-                <h3>2. Hierarchical Clustering Instead of Flat Clustering</h3>
-
-                <p>Instead of creating one big cluster per person, use a two-level approach:</p>
-                <ul>
-                    <li><strong>Level 1:</strong> Create micro-clusters (very similar faces)</li>
-                    <li><strong>Level 2:</strong> Link micro-clusters that likely belong to the same person using context signals</li>
-                </ul>
+                <h2>A Better Way: Stop Looking at Just the Face</h2>
 
                 <p>
-                    This way, your face with glasses and without glasses are separate micro-clusters but linked as
-                    the same person.
+                    The fix isn't that complicated. Apple Photos is only looking at your face. But there's so much
+                    other information in your photos that could help.
                 </p>
 
-                <h3>3. Adaptive Similarity Thresholds</h3>
+                <h3>Look at the context too</h3>
 
-                <p>Use different similarity thresholds based on:</p>
+                <p>Your photos have metadata built in. Use it:</p>
                 <ul>
-                    <li>Photo quality (allow more variation for blurry photos)</li>
-                    <li>Time span (allow more variation for photos years apart)</li>
-                    <li>Number of matching context signals (lower threshold if location/clothing match)</li>
+                    <li><strong>Location:</strong> If two faces keep showing up at your home, they're probably the same person</li>
+                    <li><strong>Time:</strong> Photos taken within the same hour or day? Likely the same people</li>
+                    <li><strong>Clothing:</strong> People tend to wear similar styles and colors. That's another signal</li>
+                    <li><strong>Body build:</strong> Height, posture, body shape don't change like faces do in different lighting</li>
                 </ul>
 
-                <h2>My Experience with Facial Recognition</h2>
+                <h3>Group smarter, not harder</h3>
 
                 <p>
-                    During my master's at Northeastern University, I worked on an <strong>Image Spoof Detection</strong>
-                    project focused on facial recognition challenges. We built systems to:
+                    Instead of trying to cram everything into one perfect group per person, create smaller groups first.
+                    Like "you with glasses" and "you without glasses" as separate mini-groups. Then link those mini-groups
+                    together based on location, time, and other clues.
                 </p>
 
-                <ul>
-                    <li>Detect subtle facial features across different conditions (lighting, angles, quality)</li>
-                    <li>Distinguish real faces from fake presentations using texture and depth analysis</li>
-                    <li>Handle facial variation while maintaining security</li>
-                </ul>
+                <p>
+                    This gives you the best of both worlds. Strict grouping where it matters, but smart linking when
+                    the context makes it obvious it's the same person.
+                </p>
+
+                <h3>Be flexible with matching</h3>
+
+                <p>
+                    Not all photos are equal. A blurry photo from 2015 should get more wiggle room than a crystal-clear
+                    selfie from yesterday. If the location and time match, lower the strictness. If they don't, keep it tight.
+                </p>
+
+                <h2>What I Learned Building Face Recognition Systems</h2>
+
+                <p>
+                    During my master's at Northeastern, I spent months working on an <strong>Image Spoof Detection</strong>
+                    project. The goal was to tell real faces apart from fake ones (photos, videos, masks).
+                </p>
+
+                <p>
+                    The challenge was similar to Apple's problem, just flipped. We needed to catch when someone tried
+                    to trick the system with a photo of a face instead of a real person. That meant understanding how
+                    faces change across lighting, angles, and quality while still being able to tell real from fake.
+                </p>
 
                 <div class="callout callout-info">
-                    <strong>Key insight:</strong> Facial recognition isn't just about matching faces—it's about
-                    understanding context. The same techniques used to detect spoofing (analyzing texture, depth,
-                    consistency) can improve clustering accuracy.
+                    <strong>The big lesson?</strong> You can't just look at the face alone. We had to analyze skin texture
+                    (real skin has pores, photos don't), depth information (real faces are 3D, photos are flat), and
+                    movement patterns (real people blink and move naturally).
                 </div>
 
-                <p>In spoof detection, we learned that:</p>
-                <ul>
-                    <li><strong>Texture analysis</strong> helps differentiate faces under different lighting</li>
-                    <li><strong>Multi-modal signals</strong> (RGB + depth + context) are more reliable than single features</li>
-                    <li><strong>Temporal consistency</strong> (how faces appear over time) catches what single-frame analysis misses</li>
-                </ul>
+                <p>
+                    What's interesting is that the same techniques work for Apple's duplicate problem. When we analyzed
+                    how faces change under different lighting or angles, we learned which features stay consistent and
+                    which ones don't. Those consistent features are exactly what Apple should focus on for clustering.
+                </p>
 
-                <p>These same principles apply to solving Apple's clustering problem.</p>
+                <p>
+                    We also found that looking at multiple signals at once (face + texture + depth + timing) was way
+                    more reliable than just looking at the face. That's the same approach that would fix Apple Photos.
+                </p>
 
-                <h2>How to Fix It Yourself (For Now)</h2>
+                <h2>What You Can Do Right Now</h2>
 
-                <p>Until Apple improves their algorithm, here's what you can do:</p>
+                <p>
+                    Apple probably won't fix this anytime soon, so here's how to deal with it:
+                </p>
 
-                <h3>Manual Merge:</h3>
+                <h3>Merge them manually</h3>
                 <ol>
-                    <li>Open Photos app → People album</li>
-                    <li>Tap "Select" in top right</li>
-                    <li>Select all duplicates of the same person</li>
+                    <li>Open Photos and go to the People album</li>
+                    <li>Tap "Select" in the top right</li>
+                    <li>Select all the duplicates of the same person</li>
                     <li>Tap "Merge" at the bottom</li>
                 </ol>
+                <p>It's annoying, but it takes like 30 seconds.</p>
 
-                <h3>Name Them:</h3>
-                <p>Add names to your "people" - this helps the AI learn and reduces re-splitting</p>
-
-                <h3>Keep Original Photos:</h3>
-                <p>Avoid heavy filters/edits that change facial features significantly</p>
-
-                <h2>What Apple Should Do</h2>
-
-                <h3>Short-term fix:</h3>
-                <ul>
-                    <li>Add a "confidence score" showing how sure the AI is about each cluster</li>
-                    <li>Let users mark clusters as "same person" and learn from it</li>
-                </ul>
-
-                <h3>Long-term solution:</h3>
-                <ul>
-                    <li>Implement multi-signal clustering (face + context)</li>
-                    <li>Use on-device learning to adapt to each user's photo library</li>
-                    <li>Leverage depth data from iPhone cameras (already available, not fully used)</li>
-                </ul>
-
-                <h2>The Bottom Line</h2>
-
+                <h3>Name everyone</h3>
                 <p>
-                    Apple Photos splitting the same person into multiple clusters is a <strong>clustering algorithm
-                    limitation</strong>, not a fundamental AI failure. The fix exists—it just requires:
+                    Give your people actual names. I've noticed that named people seem to get split less often.
+                    The system might be learning from your corrections when names are attached.
                 </p>
 
-                <ol>
-                    <li>Better context awareness beyond facial features</li>
-                    <li>Hierarchical clustering instead of flat clustering</li>
-                    <li>Adaptive thresholds based on photo quality and metadata</li>
-                </ol>
-
+                <h3>Don't go crazy with filters</h3>
                 <p>
-                    With techniques from facial recognition research (like those used in spoof detection), this
-                    problem is solvable. Apple just needs to implement it.
+                    Heavy filters and edits can completely change how your face looks to the algorithm. If you want
+                    better clustering, keep your photos close to the originals.
                 </p>
 
-                <p><strong>Until then, keep manually merging those duplicates.</strong></p>
+                <h2>What Apple Should Actually Do</h2>
+
+                <p>
+                    If I were on the Photos team, here's what I'd push for:
+                </p>
+
+                <h3>Quick wins</h3>
+                <p>
+                    Show us how confident the system is. Like "85% sure this is the same person." That way we know
+                    which merges are safe and which ones need a closer look.
+                </p>
+                <p>
+                    Also, let the system learn from our corrections. If I keep merging the same two clusters, that
+                    should teach it something.
+                </p>
+
+                <h3>The real fix</h3>
+                <p>
+                    Use all the data you already have. Location, time, depth sensors from the camera. iPhones collect
+                    this stuff anyway. Stop throwing it away and just looking at faces.
+                </p>
+                <p>
+                    And let the system learn from each person's photo library individually instead of using the same
+                    generic algorithm for everyone.
+                </p>
+
+                <h2>Final Thoughts</h2>
+
+                <p>
+                    This isn't some impossible problem. Apple's clustering algorithm is just too simple. It only looks
+                    at faces and ignores everything else.
+                </p>
+
+                <p>
+                    The solution is straightforward: use the context. Location, time, clothing, body build. All that
+                    data is already sitting there in your photos. Just use it.
+                </p>
+
+                <p>
+                    From working on facial recognition and spoof detection, I know this stuff is solvable. The techniques
+                    exist. Someone at Apple just needs to prioritize it.
+                </p>
+
+                <p>Until then, I guess we're all stuck manually merging duplicates every week.</p>
 
                 <div class="post-tags">
                     <h3>Tags:</h3>
