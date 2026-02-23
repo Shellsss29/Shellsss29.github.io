@@ -16,68 +16,113 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <style>
+        body {
+            background: #f8f9fa;
+        }
         .post-content {
-            font-size: 1.1em;
-            line-height: 1.8;
-            color: #333;
+            font-size: 1.15em;
+            line-height: 1.9;
+            color: #2c3e50;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         }
         .post-content h2 {
-            margin-top: 50px;
-            margin-bottom: 20px;
-            color: #2c3e50;
-            font-size: 1.8em;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
+            margin-top: 60px;
+            margin-bottom: 25px;
+            color: #1a202c;
+            font-size: 2em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .post-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
         }
         .post-content h3 {
-            margin-top: 30px;
-            margin-bottom: 15px;
-            color: #34495e;
-            font-size: 1.4em;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            color: #2d3748;
+            font-size: 1.5em;
+            font-weight: 600;
         }
         .post-content p {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+        .post-content strong {
+            color: #1a202c;
+            font-weight: 600;
         }
         .post-content pre {
-            background: #2d2d2d;
-            border-radius: 8px;
-            padding: 20px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
+            border-radius: 12px;
+            padding: 25px;
             overflow-x: auto;
-            margin: 25px 0;
-            border-left: 4px solid #3498db;
+            margin: 30px 0;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         .post-content code {
-            background: #f4f4f4;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Courier New', monospace;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-family: 'Fira Code', 'Monaco', 'Courier New', monospace;
             font-size: 0.9em;
-            color: #e74c3c;
+            color: #92400e;
+            font-weight: 500;
+            border: 1px solid #fbbf24;
         }
         .post-content pre code {
             background: transparent;
             padding: 0;
-            color: #ccc;
+            color: #e0e7ff;
+            border: none;
+            font-weight: 400;
         }
         .post-content table {
             width: 100%;
             border-collapse: collapse;
-            margin: 30px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 40px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
         }
         .post-content table th,
         .post-content table td {
-            border: 1px solid #ddd;
-            padding: 15px;
+            border: none;
+            padding: 18px 20px;
             text-align: left;
         }
         .post-content table th {
-            background: #3498db;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+        .post-content table tr {
+            transition: all 0.2s;
         }
         .post-content table tr:nth-child(even) {
-            background: #f8f9fa;
+            background: #f8fafc;
+        }
+        .post-content table tr:nth-child(odd) {
+            background: white;
+        }
+        .post-content table tr:hover {
+            background: #e0e7ff;
+            transform: scale(1.01);
         }
         .post-content blockquote {
             border-left: 4px solid #3498db;
@@ -87,44 +132,102 @@
             font-style: italic;
         }
         .post-content ul {
-            margin: 20px 0;
-            padding-left: 30px;
+            margin: 25px 0;
+            padding-left: 0;
+            list-style: none;
         }
         .post-content li {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            padding-left: 35px;
+            position: relative;
+            line-height: 1.8;
+        }
+        .post-content li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.3em;
         }
         .highlight-box {
-            background: #e8f4f8;
-            border-left: 4px solid #3498db;
-            padding: 20px;
-            margin: 25px 0;
-            border-radius: 4px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
+            border-left: 6px solid #667eea;
+            padding: 30px;
+            margin: 35px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        }
+        .highlight-box strong {
+            color: #4c1d95;
         }
         .github-cta {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px;
-            border-radius: 12px;
-            margin: 50px 0;
+            padding: 50px;
+            border-radius: 20px;
+            margin: 60px 0;
             text-align: center;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .github-cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         .github-cta h3 {
             color: white;
             margin-top: 0;
+            font-size: 1.8em;
+            position: relative;
+            z-index: 1;
+        }
+        .github-cta p {
+            color: rgba(255,255,255,0.95);
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
         }
         .github-cta .btn {
             background: white;
             color: #667eea;
-            padding: 12px 30px;
+            padding: 15px 40px;
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 10px;
             display: inline-block;
-            margin-top: 15px;
-            font-weight: 600;
-            transition: transform 0.2s;
+            margin-top: 10px;
+            font-weight: 700;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         .github-cta .btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .blog-post-page {
+            background: white;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.05);
+            margin-top: 20px;
         }
     </style>
 </head>
