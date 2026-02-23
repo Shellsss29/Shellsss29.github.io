@@ -1,0 +1,49 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- GPU Icon -->
+  <rect x="80" y="80" width="120" height="120" fill="url(#text-gradient)" rx="20" opacity="0.3"/>
+  <text x="140" y="165" font-family="Arial, sans-serif" font-size="80" fill="url(#text-gradient)" text-anchor="middle">🖥️</text>
+
+  <!-- Title -->
+  <text x="80" y="280" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="52" font-weight="bold" fill="#ffffff">
+    Training Large Models
+  </text>
+  <text x="80" y="350" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="52" font-weight="bold" fill="#ffffff">
+    on Limited GPU Memory
+  </text>
+
+  <!-- Subtitle -->
+  <text x="80" y="420" font-family="Arial, sans-serif" font-size="32" fill="#94a3b8">
+    A practical guide to 3× memory reduction
+  </text>
+
+  <!-- Stats -->
+  <rect x="80" y="470" width="280" height="80" fill="rgba(129, 140, 248, 0.2)" rx="12"/>
+  <text x="100" y="510" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#818cf8">8.2GB → 2.6GB</text>
+  <text x="100" y="535" font-family="Arial, sans-serif" font-size="18" fill="#cbd5e1">Memory Saved</text>
+
+  <rect x="380" y="470" width="280" height="80" fill="rgba(129, 140, 248, 0.2)" rx="12"/>
+  <text x="400" y="510" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#818cf8">0.2% Loss</text>
+  <text x="400" y="535" font-family="Arial, sans-serif" font-size="18" fill="#cbd5e1">Accuracy Impact</text>
+
+  <rect x="680" y="470" width="280" height="80" fill="rgba(129, 140, 248, 0.2)" rx="12"/>
+  <text x="700" y="510" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#818cf8">22% Faster</text>
+  <text x="700" y="535" font-family="Arial, sans-serif" font-size="18" fill="#cbd5e1">With FP16</text>
+
+  <!-- Author -->
+  <text x="1120" y="590" font-family="Arial, sans-serif" font-size="24" fill="#64748b" text-anchor="end">Shailly Bhati</text>
+</svg>

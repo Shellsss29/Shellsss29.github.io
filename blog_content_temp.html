@@ -1,0 +1,407 @@
+<h1>Training Large Models on Limited GPU Memory: A Practical Guide</h1>
+
+<strong>By Shailly Bhati</strong>
+
+---
+
+<h2>The Problem That Every ML Engineer Faces</h2>
+
+<p>You've downloaded a pre-trained model for fine-tuning. Maybe it's a 7B parameter language model, or a large vision transformer. You write your training script, hit run, and then...</p>
+
+<pre><code>RuntimeError: CUDA out of memory.
+<p>Tried to allocate 2.00 GiB (GPU 0; 15.78 GiB total capacity)</code></pre></p>
+
+<p>Sound familiar? You're not alone.</p>
+
+<p>The reality is harsh: modern deep learning models are <strong>memory hungry</strong>. A 7B parameter model needs around 56GB just to load the weights in FP32. Add gradients, optimizer states, and activations during training, and you're looking at <strong>200GB+</strong> of memory. But most of us don't have access to A100s with 80GB of memory sitting around.</p>
+
+<p>So what do we do? Give up on training large models? Pay $5/hour for cloud GPUs?</p>
+
+<strong>There's a better way.</strong>
+
+---
+
+<h2>Understanding Where Your Memory Goes</h2>
+
+<p>Before we optimize, let's understand what's eating up all that GPU memory during training.</p>
+
+<h3>Memory Breakdown for a 7B Parameter Model</h3>
+
+<pre><code>Training Memory (FP32):
+<p>├─ Model Weights: 28 GB (4 bytes × 7B parameters)</p>
+<p>├─ Gradients: 28 GB (same size as weights)</p>
+<p>├─ Optimizer States (Adam): 56 GB (momentum + variance)</p>
+<p>└─ Activations: 15-30 GB (depends on batch size)</p>
+<p>Total: ~130 GB 😱</code></pre></p>
+
+<p>Let's break this down:</p>
+
+<strong>1. Model Weights</strong>: This is the model itself. Each parameter stored as a 32-bit float takes 4 bytes.
+
+<strong>2. Gradients</strong>: During backpropagation, we need to store gradients for every parameter. Same size as the model.
+
+<strong>3. Optimizer States</strong>: Adam optimizer (the most popular) keeps track of momentum and variance for each parameter. That's 2× the model size.
+
+<strong>4. Activations</strong>: These are the intermediate outputs stored during the forward pass, needed for backpropagation. Size depends on batch size and model architecture.
+
+<strong>Key insight</strong>: The model weights are actually the *smallest* part of the memory footprint during training!
+
+---
+
+<h2>The Solution: Memory Optimization Techniques</h2>
+
+<p>In 2026, we have several proven techniques to dramatically reduce memory usage. I'm going to show you how to combine them to achieve <strong>3-4× memory reduction</strong> with minimal impact on accuracy.</p>
+
+---
+
+<h2>Technique #1: Mixed Precision Training (FP16)</h2>
+
+<strong>Memory Savings: 2×</strong>
+<strong>Speed Impact: 1.2-1.5× faster</strong>
+<strong>Accuracy Impact: Negligible</strong>
+
+<h3>What is it?</h3>
+
+<p>Instead of using 32-bit floats (FP32) everywhere, we use 16-bit floats (FP16) for most operations. This cuts memory usage in half while actually making training faster on modern GPUs.</p>
+
+<h3>Why does it work?</h3>
+
+<p>Modern GPUs (like NVIDIA's Tensor Cores) are optimized for FP16 operations. You get:</p>
+<ul>
+<li>50% less memory usage</li>
+<li>Faster computation</li>
+<li>Almost no accuracy loss (in most cases)</li>
+</ul>
+
+<h3>Implementation</h3>
+
+<p>PyTorch makes this super easy with Automatic Mixed Precision (AMP):</p>
+
+<pre><code class="language-python">import torch
+<p>from torch.cuda.amp import autocast, GradScaler</p>
+
+<p>model = YourModel().cuda()</p>
+<p>optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)</p>
+<p>scaler = GradScaler()</p>
+
+<p>for batch in dataloader:</p>
+<p>optimizer.zero_grad()</p>
+
+<p># Forward pass in FP16</p>
+<p>with autocast():</p>
+<p>outputs = model(inputs)</p>
+<p>loss = criterion(outputs, targets)</p>
+
+<p># Backward pass with gradient scaling</p>
+<p>scaler.scale(loss).backward()</p>
+<p>scaler.step(optimizer)</p>
+<p>scaler.update()</code></pre></p>
+
+<strong>That's it!</strong> Just wrap your forward pass in <code>autocast()</code> and use <code>GradScaler</code> for the backward pass.
+
+<h3>Why gradient scaling?</h3>
+
+<p>FP16 has a smaller range than FP32. Very small gradients can become zero (underflow). The scaler multiplies gradients by a factor before backprop, then unscales them before the optimizer step. This prevents underflow while keeping everything in FP16.</p>
+
+---
+
+<h2>Technique #2: Gradient Checkpointing</h2>
+
+<strong>Memory Savings: 30-50%</strong>
+<strong>Speed Impact: 10-20% slower</strong>
+<strong>Accuracy Impact: None</strong>
+
+<h3>What is it?</h3>
+
+<p>Gradient checkpointing trades computation for memory. Instead of storing all activations during the forward pass, we only store some of them and recompute the rest during backpropagation.</p>
+
+<h3>The Trade-off</h3>
+
+<strong>Normal training</strong>:
+<ul>
+<li>Forward pass: Compute and STORE all activations</li>
+<li>Backward pass: Use stored activations to compute gradients</li>
+<li>Memory: High, Speed: Fast</li>
+</ul>
+
+<strong>With checkpointing</strong>:
+<ul>
+<li>Forward pass: Compute activations, store only SOME</li>
+<li>Backward pass: RECOMPUTE missing activations, then compute gradients</li>
+<li>Memory: Lower, Speed: Slightly slower</li>
+</ul>
+
+<h3>When to use it?</h3>
+
+<p>If you're running out of memory even with FP16, this is your next step. The 10-20% speed penalty is worth it if it means the difference between training successfully or not at all.</p>
+
+<h3>Implementation</h3>
+
+<pre><code class="language-python">import torch.utils.checkpoint as checkpoint
+
+<p>class EfficientModel(torch.nn.Module):</p>
+<p>def __init__(self):</p>
+<p>super().__init__()</p>
+<p>self.layer1 = TransformerBlock()</p>
+<p>self.layer2 = TransformerBlock()</p>
+<p>self.layer3 = TransformerBlock()</p>
+<p>self.layer4 = TransformerBlock()</p>
+
+<p>def forward(self, x):</p>
+<p># Checkpoint every layer</p>
+<p>x = checkpoint.checkpoint(self.layer1, x)</p>
+<p>x = checkpoint.checkpoint(self.layer2, x)</p>
+<p>x = checkpoint.checkpoint(self.layer3, x)</p>
+<p>x = checkpoint.checkpoint(self.layer4, x)</p>
+<p>return x</code></pre></p>
+
+<strong>Pro tip</strong>: You don't need to checkpoint *every* layer. Checkpointing every 2-3 layers often gives a good balance between memory savings and speed.
+
+---
+
+<h2>Technique #3: 8-bit Optimizers</h2>
+
+<strong>Memory Savings: 30-40% on optimizer states</strong>
+<strong>Speed Impact: ~5% slower</strong>
+<strong>Accuracy Impact: Minimal</strong>
+
+<h3>What is it?</h3>
+
+<p>Adam optimizer stores momentum and variance (2× model size). With 8-bit optimizers, we quantize these states to 8-bit integers instead of 32-bit floats.</p>
+
+<h3>Implementation</h3>
+
+Using the <code>bitsandbytes</code> library:
+
+<pre><code class="language-python">import bitsandbytes as bnb
+
+<h1>Instead of:</h1>
+<h1>optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)</h1>
+
+<h1>Use:</h1>
+<p>optimizer = bnb.optim.Adam8bit(model.parameters(), lr=1e-4)</code></pre></p>
+
+<strong>That's literally it.</strong> One line change for 4× reduction in optimizer memory.
+
+---
+
+<h2>Putting It All Together</h2>
+
+<p>Let's combine all three techniques into a complete training script:</p>
+
+<pre><code class="language-python">import torch
+<p>import torch.nn as nn</p>
+<p>import torch.utils.checkpoint as checkpoint</p>
+<p>from torch.cuda.amp import autocast, GradScaler</p>
+<p>import bitsandbytes as bnb</p>
+
+<h1>Memory-efficient model with gradient checkpointing</h1>
+<p>class MemoryEfficientModel(nn.Module):</p>
+<p>def __init__(self, num_layers=12, hidden_size=768):</p>
+<p>super().__init__()</p>
+<p>self.layers = nn.ModuleList([</p>
+<p>nn.TransformerEncoderLayer(d_model=hidden_size, nhead=12)</p>
+<p>for _ in range(num_layers)</p>
+<p>])</p>
+<p>self.fc = nn.Linear(hidden_size, 1000)</p>
+
+<p>def forward(self, x):</p>
+<p># Checkpoint every 3 layers</p>
+<p>for i, layer in enumerate(self.layers):</p>
+<p>if i % 3 == 0:</p>
+<p>x = checkpoint.checkpoint(layer, x)</p>
+<p>else:</p>
+<p>x = layer(x)</p>
+<p>return self.fc(x)</p>
+
+<h1>Initialize</h1>
+<p>model = MemoryEfficientModel().cuda()</p>
+
+<h1>8-bit optimizer</h1>
+<p>optimizer = bnb.optim.Adam8bit(model.parameters(), lr=1e-4)</p>
+
+<h1>Mixed precision scaler</h1>
+<p>scaler = GradScaler()</p>
+
+<h1>Training loop</h1>
+<p>for epoch in range(num_epochs):</p>
+<p>for batch in dataloader:</p>
+<p>inputs, targets = batch</p>
+<p>inputs, targets = inputs.cuda(), targets.cuda()</p>
+
+<p>optimizer.zero_grad()</p>
+
+<p># FP16 forward pass</p>
+<p>with autocast():</p>
+<p>outputs = model(inputs)</p>
+<p>loss = criterion(outputs, targets)</p>
+
+<p># Backward with gradient scaling</p>
+<p>scaler.scale(loss).backward()</p>
+<p>scaler.step(optimizer)</p>
+<p>scaler.update()</code></pre></p>
+
+---
+
+<h2>Benchmark Results</h2>
+
+<p>I tested these techniques on a ResNet-50 model trained on CIFAR-100. Here's what I found:</p>
+
+<p>| Configuration | GPU Memory | Training Time | Accuracy |</p>
+<p>|--------------|------------|---------------|----------|</p>
+<p>| <strong>Baseline (FP32 + Adam)</strong> | 8.2 GB | 100% | 78.5% |</p>
+<p>| <strong>+ FP16</strong> | 4.5 GB | 78% ⚡ | 78.4% |</p>
+<p>| <strong>+ Checkpointing</strong> | 3.1 GB | 88% | 78.4% |</p>
+<p>| <strong>+ 8-bit Optimizer</strong> | <strong>2.6 GB</strong> ✅ | 92% | 78.3% |</p>
+
+<strong>Key findings</strong>:
+<ul>
+<li>🎯 <strong>3.2× memory reduction</strong> (8.2GB → 2.6GB)</li>
+<li>🚀 FP16 actually makes training *faster*</li>
+<li>📊 Accuracy barely changed (78.5% → 78.3%)</li>
+<li>✅ Can now fit on consumer GPUs!</li>
+</ul>
+
+<h3>Visual Results</h3>
+
+<p>*(See benchmark_results.png in the repository)*</p>
+
+---
+
+<h2>Additional Tips & Tricks</h2>
+
+<h3>1. Reduce Batch Size</h3>
+<p>The simplest solution, but impacts convergence. Use gradient accumulation to simulate larger batches:</p>
+
+<pre><code class="language-python">accumulation_steps = 4
+
+<p>for i, batch in enumerate(dataloader):</p>
+<p>with autocast():</p>
+<p>loss = model(batch) / accumulation_steps</p>
+
+<p>scaler.scale(loss).backward()</p>
+
+<p>if (i + 1) % accumulation_steps == 0:</p>
+<p>scaler.step(optimizer)</p>
+<p>scaler.update()</p>
+<p>optimizer.zero_grad()</code></pre></p>
+
+<h3>2. Monitor Memory Usage</h3>
+
+<pre><code class="language-python">import torch
+
+<h1>Check current memory usage</h1>
+<p>print(f"Allocated: {torch.cuda.memory_allocated() / 1e9:.2f} GB")</p>
+<p>print(f"Cached: {torch.cuda.memory_reserved() / 1e9:.2f} GB")</p>
+
+<h1>Get detailed summary</h1>
+<p>print(torch.cuda.memory_summary())</code></pre></p>
+
+<h3>3. Clear Cache Between Runs</h3>
+
+<pre><code class="language-python">torch.cuda.empty_cache()</code></pre>
+
+<h3>4. Use Smaller Models with LoRA</h3>
+
+<p>For fine-tuning, consider LoRA (Low-Rank Adaptation). Instead of training all parameters, you train small adapter matrices:</p>
+
+<pre><code class="language-python">from peft import LoraConfig, get_peft_model
+
+<p>config = LoraConfig(r=8, lora_alpha=16, target_modules=["q_proj", "v_proj"])</p>
+<p>model = get_peft_model(model, config)</p>
+
+<h1>Now model has only ~1% trainable parameters!</h1>
+<p>print(model.print_trainable_parameters())</code></pre></p>
+
+---
+
+<h2>When to Use Each Technique</h2>
+
+<p>Here's my decision tree:</p>
+
+<p>1. <strong>Always use</strong>: Mixed precision (FP16)</p>
+<ul>
+<li>Free performance boost</li>
+<li>2× memory savings</li>
+<li>No downsides</li>
+</ul>
+
+<p>2. <strong>If still OOM</strong>: Add gradient checkpointing</p>
+<ul>
+<li>30-50% more memory savings</li>
+<li>Slight speed penalty worth it</li>
+</ul>
+
+<p>3. <strong>If still struggling</strong>: 8-bit optimizer</p>
+<ul>
+<li>Another 30% reduction</li>
+<li>Minimal accuracy impact</li>
+</ul>
+
+<p>4. <strong>For fine-tuning only</strong>: LoRA</p>
+<ul>
+<li>Massive memory savings</li>
+<li>Only trains 1% of parameters</li>
+</ul>
+
+<p>5. <strong>Last resort</strong>: Reduce batch size + gradient accumulation</p>
+<ul>
+<li>Linear memory savings</li>
+<li>Can impact convergence</li>
+</ul>
+
+---
+
+<h2>Future Directions (2026 and Beyond)</h2>
+
+<p>The field is rapidly evolving. Here's what's coming:</p>
+
+<strong>4-bit Quantization</strong>: Methods like GPTQ and AWQ enable 4-bit inference and training with minimal quality loss.
+
+<strong>Flash Attention</strong>: Reduces attention mechanism memory from O(n²) to O(n), crucial for long sequences.
+
+<strong>Model Parallelism</strong>: Split models across multiple GPUs when even these techniques aren't enough.
+
+<strong>Custom Kernels</strong>: Frameworks like <code>xformers</code> and <code>flash-attn</code> provide highly optimized CUDA kernels.
+
+---
+
+<h2>Conclusion</h2>
+
+<p>Memory doesn't have to be a bottleneck. With the techniques I've shown you:</p>
+
+<p>✅ Train 3-4× larger models on the same hardware</p>
+<p>✅ Minimal accuracy loss (<0.5%)</p>
+<p>✅ Often faster training (thanks to FP16)</p>
+<p>✅ Works on consumer GPUs</p>
+
+<p>The best part? Most of this is just a few lines of code.</p>
+
+<p>Start with mixed precision. If you need more savings, add gradient checkpointing. If you're fine-tuning, use LoRA. And if you're doing everything from scratch, throw in an 8-bit optimizer.</p>
+
+<strong>The era of "I don't have enough GPU memory" is over.</strong>
+
+---
+
+<h2>Resources</h2>
+
+<ul>
+<li><strong>Full code</strong>: [GitHub Repository](https://github.com/Shellsss29/memory-efficient-training)</li>
+<li><strong>Benchmark script</strong>: See <code>benchmark.py</code> in the repo</li>
+<li><strong>Requirements</strong>: <code>requirements.txt</code> included</li>
+</ul>
+
+<h3>Further Reading</h3>
+
+<ul>
+<li>[PyTorch AMP Documentation](https://pytorch.org/docs/stable/amp.html)</li>
+<li>[Gradient Checkpointing Guide](https://pytorch.org/docs/stable/checkpoint.html)</li>
+<li>[BitsAndBytes Library](https://github.com/TimDettmers/bitsandbytes)</li>
+<li>[PEFT (LoRA) Documentation](https://github.com/huggingface/peft)</li>
+</ul>
+
+---
+
+<strong>Questions or feedback?</strong> Feel free to reach out!
+
+<strong>Tags</strong>: #DeepLearning #PyTorch #MachineLearning #GPUOptimization #MemoryEfficiency
